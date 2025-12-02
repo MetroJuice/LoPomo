@@ -20,9 +20,9 @@ const CIRCUMFERENCE = 339.292;
 
 // Audio Configuration
 const focusAudio = new Audio('https://stream.zeno.fm/0r0xa792kwzuv');
-// "Another audio" for break - Using a track from Free Music Archive as nature/ambient wasn't available via stable hotlink.
+// "Another audio" for break - Using a quiet ambient track from Pixabay.
 // Users can replace this URL with any direct MP3/Stream URL.
-const breakAudio = new Audio('https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Tours/Enthusiast/Tours_-_01_-_Enthusiast.mp3');
+const breakAudio = new Audio('https://cdn.pixabay.com/audio/2022/05/27/audio_1808fbf07a.mp3');
 
 // Configure Audio
 focusAudio.loop = true;
@@ -37,6 +37,7 @@ const timerDisplay = document.getElementById('timer-display');
 const progressCircle = document.getElementById('progress-circle');
 const toggleBtn = document.getElementById('toggle-btn');
 const toggleIcon = document.getElementById('toggle-icon');
+const resetBtn = document.getElementById('reset-btn');
 const skipBtn = document.getElementById('skip-btn');
 const statusText = document.getElementById('status-text');
 const sessionText = document.getElementById('session-text');
@@ -63,6 +64,7 @@ function init() {
 
 function setupEventListeners() {
     toggleBtn.addEventListener('click', toggleTimer);
+    resetBtn.addEventListener('click', resetTimer);
     skipBtn.addEventListener('click', skipSession);
     fullscreenBtn.addEventListener('click', toggleFullscreen);
 
@@ -194,6 +196,12 @@ function switchAudioSource(newMode) {
     }
 
     currentAudio.volume = currentVol;
+}
+
+function resetTimer() {
+    pauseTimer();
+    state.timeLeft = state.totalTime;
+    updateDisplay();
 }
 
 function completeSession() {
