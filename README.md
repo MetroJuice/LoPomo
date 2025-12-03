@@ -1,6 +1,7 @@
 # LofiPomo
 
 GitHub Pagesで動作するLofiポモドーロタイマーです。
+[👉Pages](https://metrojuice.github.io/LoPomo/)
 
 ## 特徴
 - **Lofi Music**: フォーカス中はリラックスできるLofi Musicが流れます (Zeno FM)。
