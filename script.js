@@ -45,6 +45,9 @@ const settingsBtn = document.getElementById('settings-btn');
 const fullscreenBtn = document.getElementById('fullscreen-btn');
 const fullscreenIcon = document.getElementById('fullscreen-icon');
 
+// Wake Lock
+let wakeLock = null;
+
 // Settings Elements
 const settingsOverlay = document.getElementById('settings-overlay');
 const settingsModal = document.getElementById('settings-modal');
@@ -67,6 +70,9 @@ function setupEventListeners() {
     resetBtn.addEventListener('click', resetTimer);
     skipBtn.addEventListener('click', skipSession);
     fullscreenBtn.addEventListener('click', toggleFullscreen);
+
+    // Visibility Change for Wake Lock
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     // Settings Logic
     settingsBtn.addEventListener('click', openSettings);
@@ -152,6 +158,9 @@ function startTimer() {
     state.isRunning = true;
     toggleIcon.textContent = 'pause';
 
+    // Request Wake Lock
+    requestWakeLock();
+
     // Play Current Audio
     currentAudio.play().catch(e => console.log('Audio playback failed (interaction needed):', e));
 
@@ -169,6 +178,9 @@ function pauseTimer() {
     state.isRunning = false;
     toggleIcon.textContent = 'play_arrow';
     clearInterval(state.timerId);
+
+    // Release Wake Lock
+    releaseWakeLock();
 
     // Pause Audio
     currentAudio.pause();
@@ -273,6 +285,36 @@ function updateDisplay() {
        sessionText.textContent = `Session ${state.sessionCount} of ${state.totalSessions}`;
     } else {
        sessionText.textContent = 'Take a break';
+    }
+}
+
+// Wake Lock Functions
+async function requestWakeLock() {
+    if ('wakeLock' in navigator) {
+        try {
+            wakeLock = await navigator.wakeLock.request('screen');
+            wakeLock.addEventListener('release', () => {
+                // Lock released
+            });
+        } catch (err) {
+            console.error(`${err.name}, ${err.message}`);
+        }
+    }
+}
+
+function releaseWakeLock() {
+    if (wakeLock !== null) {
+        wakeLock.release()
+            .then(() => {
+                wakeLock = null;
+            })
+            .catch(err => console.error(err));
+    }
+}
+
+function handleVisibilityChange() {
+    if (document.visibilityState === 'visible' && state.isRunning) {
+        requestWakeLock();
     }
 }
 
