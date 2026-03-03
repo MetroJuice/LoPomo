@@ -1,145 +1,212 @@
 <!DOCTYPE html>
-<html class="dark" lang="ja"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>LofiPomo</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<!-- External CSS -->
-<link href="style.css" rel="stylesheet"/>
+<html class="dark" lang="ja">
 
-<script id="tailwind-config">
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            colors: {
-              "primary": "#8b5cf6",
-              "background-light": "#f6f7f8",
-              "background-dark": "#18181b",
-            },
-            fontFamily: {
-              "display": ["Manrope", "sans-serif"],
-              "timer": ["Manrope", "sans-serif"]
-            },
-            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>LofiPomo</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+  <!-- External CSS -->
+  <link href="style.css" rel="stylesheet" />
+
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#8b5cf6",
+            "background-light": "#f6f7f8",
+            "background-dark": "#18181b",
           },
+          fontFamily: {
+            "display": ["Manrope", "sans-serif"],
+            "timer": ["Manrope", "sans-serif"]
+          },
+          borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
         },
-      }
-    </script>
+      },
+    }
+  </script>
 </head>
-<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100">
 
-<!-- Main Container -->
-<div class="relative flex h-dvh w-full flex-col overflow-hidden">
+<body
+  class="bg-slate-50 text-slate-900 flex flex-col h-dvh dark:bg-slate-950 dark:text-slate-50 font-sans antialiased overflow-hidden">
 
-  <!-- Header -->
-  <header class="flex items-center justify-between whitespace-nowrap px-6 py-4 z-10">
-    <div class="flex items-center gap-3">
-      <div class="size-6 text-primary">
-        <svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2Zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8Z"></path>
-          <path d="M13 7h-2v5.414l3.293 3.293 1.414-1.414L13 11.586V7Z"></path>
-        </svg>
+  <!-- Ambient Moving Backgrounds (Hidden by default, used for screensaver mode) -->
+  <div id="ambient-backgrounds"
+    class="fixed inset-0 z-0 pointer-events-none w-full h-full opacity-0 transition-opacity duration-1000">
+    <!-- We will animate these blobs in JS -->
+    <div id="blob-1"
+      class="absolute top-1/2 left-1/4 w-[50vw] h-[50vw] bg-white/10 rounded-full blur-3xl transform -translate-x-1/2 -translate-y-1/2 mix-blend-screen transition-all duration-[12000ms] ease-in-out">
+    </div>
+    <div id="blob-2"
+      class="absolute top-1/4 left-3/4 w-[60vw] h-[60vw] bg-primary/20 rounded-full blur-[100px] transform -translate-x-1/2 -translate-y-1/2 mix-blend-screen transition-all duration-[12000ms] ease-in-out">
+    </div>
+  </div>
+
+  <div id="app-container"
+    class="relative z-10 flex flex-col h-full w-full max-w-screen-3xl mx-auto transition-opacity duration-1000">
+
+    <!-- Header -->
+    <header id="main-header" class="flex items-center justify-between p-6 w-full z-10 transition-opacity duration-500">
+      <div class="flex items-center gap-3">
+        <div class="size-6 text-primary">
+          <svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2Zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8Z">
+            </path>
+            <path d="M13 7h-2v5.414l3.293 3.293 1.414-1.414L13 11.586V7Z"></path>
+          </svg>
+        </div>
+        <h2 class="text-lg font-bold tracking-tight">LofiPomo</h2>
       </div>
-      <h2 class="text-lg font-bold tracking-tight">LofiPomo</h2>
-    </div>
-    <div class="flex items-center gap-2">
-      <button id="fullscreen-btn" class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg bg-slate-200/50 dark:bg-white/10 transition-colors hover:bg-slate-300/50 dark:hover:bg-white/20">
-        <span id="fullscreen-icon" class="material-symbols-outlined text-2xl">fullscreen</span>
-      </button>
-      <button id="settings-btn" class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg bg-slate-200/50 dark:bg-white/10 transition-colors hover:bg-slate-300/50 dark:hover:bg-white/20">
-        <span class="material-symbols-outlined text-2xl">settings</span>
-      </button>
-    </div>
-  </header>
-
-  <!-- Main Content -->
-  <main class="flex flex-1 flex-col items-center justify-center text-center p-4">
-
-    <!-- Timer Circle -->
-    <div class="relative flex items-center justify-center w-72 h-72 sm:w-80 sm:h-80 md:w-96 md:h-96">
-      <svg class="absolute inset-0 w-full h-full" viewBox="0 0 120 120">
-        <circle class="text-slate-200/20 dark:text-slate-700/30" cx="60" cy="60" fill="transparent" r="54" stroke="currentColor" stroke-width="8"></circle>
-        <circle id="progress-circle" class="-rotate-90 origin-center transform text-primary" cx="60" cy="60" fill="transparent" r="54" stroke="currentColor" stroke-dasharray="339.292" stroke-dashoffset="0" stroke-linecap="round" stroke-width="8"></circle>
-      </svg>
-      <div class="z-10 flex flex-col items-center justify-center">
-        <p id="timer-display" class="font-timer text-6xl sm:text-7xl md:text-8xl font-light leading-none tabular-nums tracking-wide w-[300px] text-center">25:00</p>
-      </div>
-    </div>
-
-    <!-- Controls -->
-    <div class="mt-8 flex flex-col items-center gap-6">
-      <div class="flex items-center gap-6">
-        <button id="reset-btn" class="flex h-14 w-14 items-center justify-center rounded-full bg-slate-200/50 dark:bg-white/10 text-slate-600 dark:text-slate-300 transition-colors hover:bg-slate-300/50 dark:hover:bg-white/20">
-          <span class="material-symbols-outlined text-3xl">refresh</span>
+      <div class="flex items-center gap-2">
+        <button type="button" id="clock-toggle-btn"
+          class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg bg-slate-200/50 dark:bg-white/10 transition-colors hover:bg-slate-300/50 dark:hover:bg-white/20"
+          title="Toggle Clock">
+          <span class="material-symbols-outlined text-2xl">schedule</span>
         </button>
-        <button id="toggle-btn" class="flex h-20 w-20 items-center justify-center rounded-full bg-primary text-white shadow-xl shadow-primary/30 transition-transform active:scale-95 hover:scale-105">
-          <span id="toggle-icon" class="material-symbols-outlined text-5xl">play_arrow</span>
+        <button type="button" id="fullscreen-btn"
+          class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg bg-slate-200/50 dark:bg-white/10 transition-colors hover:bg-slate-300/50 dark:hover:bg-white/20">
+          <span id="fullscreen-icon" class="material-symbols-outlined text-2xl">fullscreen</span>
         </button>
-        <button id="skip-btn" class="flex h-14 w-14 items-center justify-center rounded-full bg-slate-200/50 dark:bg-white/10 text-slate-600 dark:text-slate-300 transition-colors hover:bg-slate-300/50 dark:hover:bg-white/20">
-          <span class="material-symbols-outlined text-3xl">skip_next</span>
+        <button type="button" id="settings-btn"
+          class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg bg-slate-200/50 dark:bg-white/10 transition-colors hover:bg-slate-300/50 dark:hover:bg-white/20">
+          <span class="material-symbols-outlined text-2xl">settings</span>
         </button>
       </div>
-    </div>
-  </main>
+    </header>
 
-  <!-- Footer -->
-  <footer class="w-full self-center p-6 z-10">
-    <div class="text-center">
-      <p id="status-text" class="text-xl font-semibold">Focus Time</p>
-      <p id="session-text" class="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">Session 1 of 4</p>
-      <div class="text-xs text-slate-400 dark:text-slate-500 mt-4">
-        Music: Lofi Hip Hop Radio (Zeno FM) / Ambient Sound (Pixabay)
-      </div>
-    </div>
-  </footer>
-</div>
+    <!-- Main Content -->
+    <main class="flex flex-1 flex-col items-center justify-center text-center p-4">
+      <div id="main-layout"
+        class="flex flex-col lg:flex-row items-center justify-center gap-4 lg:gap-8 w-full px-4 lg:px-6 2xl:px-12 transition-all duration-500">
 
-<!-- Settings Overlay -->
-<div id="settings-overlay" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 opacity-0 pointer-events-none transition-opacity duration-300">
-  <div class="bg-white dark:bg-[#1f1f23] w-full max-w-md rounded-2xl p-6 shadow-2xl m-4 transform scale-95 transition-transform duration-300" id="settings-modal">
-    <div class="flex items-center justify-between mb-6">
-      <h3 class="text-xl font-bold">Settings</h3>
-      <button id="close-settings-btn" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
-        <span class="material-symbols-outlined">close</span>
-      </button>
-    </div>
-
-    <div class="space-y-6">
-      <!-- Timer Settings -->
-      <div class="space-y-4">
-        <label class="block text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Timer (Minutes)</label>
-        <div class="grid grid-cols-3 gap-4">
-          <div class="space-y-2">
-            <label class="text-xs font-medium">Focus</label>
-            <input type="number" id="focus-time-input" value="25" min="1" max="60" class="w-full rounded-lg bg-slate-100 dark:bg-white/5 border-none text-center focus:ring-2 focus:ring-primary p-2">
+        <!-- Huge Clock (Hidden by default) -->
+        <div id="huge-clock-container"
+          class="hidden flex-col items-center justify-end text-right lg:justify-center lg:text-center w-full lg:w-1/2 flex-shrink-1">
+          <div id="huge-clock-display"
+            class="font-timer text-[clamp(4rem,10vw,8rem)] lg:text-[clamp(5rem,10vw,8rem)] 2xl:text-[clamp(8rem,13vw,14rem)] font-bold leading-none tabular-nums tracking-tighter text-slate-800 dark:text-slate-100 whitespace-nowrap">
           </div>
-          <div class="space-y-2">
-            <label class="text-xs font-medium">Short Break</label>
-            <input type="number" id="short-break-input" value="5" min="1" max="30" class="w-full rounded-lg bg-slate-100 dark:bg-white/5 border-none text-center focus:ring-2 focus:ring-primary p-2">
+          <div id="huge-date-display"
+            class="text-xl sm:text-2xl lg:text-3xl 2xl:text-4xl text-slate-500 dark:text-slate-400 mt-4 2xl:mt-6 font-medium tracking-wide">
           </div>
-          <div class="space-y-2">
-            <label class="text-xs font-medium">Long Break</label>
-            <input type="number" id="long-break-input" value="15" min="1" max="60" class="w-full rounded-lg bg-slate-100 dark:bg-white/5 border-none text-center focus:ring-2 focus:ring-primary p-2">
+        </div>
+
+        <!-- Timer Section -->
+        <div id="timer-section"
+          class="flex flex-col items-center justify-center w-full lg:w-1/2 flex-shrink-1 transition-opacity duration-500">
+          <!-- Timer Circle -->
+          <div
+            class="relative flex items-center justify-center w-[clamp(16rem,40vmin,24rem)] h-[clamp(16rem,40vmin,24rem)] 2xl:w-[clamp(24rem,35vmin,40rem)] 2xl:h-[clamp(24rem,35vmin,40rem)]">
+            <svg class="absolute inset-0 w-full h-full" viewBox="0 0 120 120">
+              <circle class="text-slate-200/20 dark:text-slate-700/30" cx="60" cy="60" fill="transparent" r="54"
+                stroke="currentColor" stroke-width="8"></circle>
+              <circle id="progress-circle" class="-rotate-90 origin-center transform text-primary" cx="60" cy="60"
+                fill="transparent" r="54" stroke="currentColor" stroke-dasharray="339.292" stroke-dashoffset="0"
+                stroke-linecap="round" stroke-width="8"></circle>
+            </svg>
+            <div class="z-10 flex flex-col items-center justify-center">
+              <p id="timer-display"
+                class="font-timer text-[clamp(3.5rem,8vmin,5.5rem)] 2xl:text-[clamp(5.5rem,8vmin,8.5rem)] font-light leading-none tabular-nums tracking-wide w-full text-center">
+                25:00</p>
+            </div>
+          </div>
+
+          <!-- Controls -->
+          <div id="timer-controls"
+            class="mt-8 2xl:mt-12 flex flex-col items-center gap-6 transition-opacity duration-500">
+            <div class="flex items-center gap-6 2xl:gap-8">
+              <button type="button" id="reset-btn"
+                class="flex h-12 w-12 lg:h-14 lg:w-14 2xl:h-20 2xl:w-20 items-center justify-center rounded-full bg-slate-200/50 dark:bg-white/10 text-slate-600 dark:text-slate-300 transition-colors hover:bg-slate-300/50 dark:hover:bg-white/20">
+                <span class="material-symbols-outlined text-2xl lg:text-3xl 2xl:text-[2.5rem]">refresh</span>
+              </button>
+              <button type="button" id="toggle-btn"
+                class="flex h-16 w-16 lg:h-20 lg:w-20 2xl:h-28 2xl:w-28 items-center justify-center rounded-full bg-primary text-white shadow-xl shadow-primary/30 transition-transform active:scale-95 hover:scale-105">
+                <span id="toggle-icon"
+                  class="material-symbols-outlined text-4xl lg:text-5xl 2xl:text-[4rem]">play_arrow</span>
+              </button>
+              <button type="button" id="skip-btn"
+                class="flex h-12 w-12 lg:h-14 lg:w-14 2xl:h-20 2xl:w-20 items-center justify-center rounded-full bg-slate-200/50 dark:bg-white/10 text-slate-600 dark:text-slate-300 transition-colors hover:bg-slate-300/50 dark:hover:bg-white/20">
+                <span class="material-symbols-outlined text-2xl lg:text-3xl 2xl:text-[2.5rem]">skip_next</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
+    </main>
 
-      <!-- Volume Settings -->
-      <div class="space-y-4">
-         <label class="block text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Volume</label>
-         <div class="flex items-center gap-4">
-           <span class="material-symbols-outlined text-slate-400">volume_down</span>
-           <input type="range" id="volume-slider" min="0" max="1" step="0.05" value="0.5" class="w-full h-2 bg-slate-200 dark:bg-white/10 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary">
-           <span class="material-symbols-outlined text-slate-400">volume_up</span>
-         </div>
+    <!-- Footer -->
+    <footer class="w-full self-center p-6 z-10">
+      <div class="text-center">
+        <p id="status-text" class="text-xl font-semibold">Focus Time</p>
+        <p id="session-text" class="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">Session 1 of 4</p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Settings Overlay -->
+  <div id="settings-overlay"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 opacity-0 pointer-events-none transition-opacity duration-300">
+    <div
+      class="bg-white dark:bg-[#1f1f23] w-full max-w-md rounded-2xl p-6 shadow-2xl m-4 transform scale-95 transition-transform duration-300"
+      id="settings-modal">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-xl font-bold">Settings</h3>
+        <button type="button" id="close-settings-btn"
+          class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <div class="space-y-6">
+        <!-- Timer Settings -->
+        <div class="space-y-4">
+          <label class="block text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Timer
+            (Minutes)</label>
+          <div class="grid grid-cols-3 gap-4">
+            <div class="space-y-2">
+              <label class="text-xs font-medium">Focus</label>
+              <input type="number" id="focus-time-input" value="25" min="1" max="60"
+                class="w-full rounded-lg bg-slate-100 dark:bg-white/5 border-none text-center focus:ring-2 focus:ring-primary p-2">
+            </div>
+            <div class="space-y-2">
+              <label class="text-xs font-medium">Short Break</label>
+              <input type="number" id="short-break-input" value="5" min="1" max="30"
+                class="w-full rounded-lg bg-slate-100 dark:bg-white/5 border-none text-center focus:ring-2 focus:ring-primary p-2">
+            </div>
+            <div class="space-y-2">
+              <label class="text-xs font-medium">Long Break</label>
+              <input type="number" id="long-break-input" value="15" min="1" max="60"
+                class="w-full rounded-lg bg-slate-100 dark:bg-white/5 border-none text-center focus:ring-2 focus:ring-primary p-2">
+            </div>
+          </div>
+        </div>
+
+        <!-- Volume Settings -->
+        <div class="space-y-4">
+          <label
+            class="block text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Volume</label>
+          <div class="flex items-center gap-4">
+            <span class="material-symbols-outlined text-slate-400">volume_down</span>
+            <input type="range" id="volume-slider" min="0" max="1" step="0.05" value="0.1"
+              class="w-full h-2 bg-slate-200 dark:bg-white/10 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary">
+            <span class="material-symbols-outlined text-slate-400">volume_up</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- External JS -->
-<script src="script.js"></script>
-</body></html>
+  <!-- Youtube Iframe API for Audio -->
+  <div id="youtube-player" class="hidden"></div>
+  <script src="https://www.youtube.com/iframe_api"></script>
+
+  <!-- External JS -->
+  <script src="script.js"></script>
+</body>
+
+</html>

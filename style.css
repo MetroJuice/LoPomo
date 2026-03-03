@@ -5,10 +5,10 @@
 /* Custom Utility Classes that Tailwind doesn't support by default or need override */
 .material-symbols-outlined {
     font-variation-settings:
-    'FILL' 1,
-    'wght' 400,
-    'GRAD' 0,
-    'opsz' 24;
+        'FILL' 1,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 24;
 }
 
 /* Custom Range Slider Styling */
@@ -27,8 +27,14 @@ input[type=range]:focus {
 
 /* Height fix for mobile browsers */
 .h-dvh {
-    height: 100vh; /* Fallback */
+    height: 100vh;
+    /* Fallback */
     height: 100dvh;
+}
+
+/* Ensure 4K sizing works without constraints */
+body {
+    min-height: 100vh;
 }
 
 /* Force tabular numbers to prevent jitter in timer */
