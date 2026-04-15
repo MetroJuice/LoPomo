@@ -31,15 +31,17 @@ let isYoutubeReady = false;
 // YouTube API Initialization callback
 window.onYouTubeIframeAPIReady = function () {
     youtubePlayer = new YT.Player('youtube-player', {
-        height: '0',
-        width: '0',
+        height: '200',
+        width: '200',
         videoId: YOUTUBE_VIDEO_IDS.focus,
         playerVars: {
             'autoplay': 0,
             'controls': 0,
             'disablekb': 1,
             'fs': 0,
-            'playsinline': 1
+            'playsinline': 1,
+            'rel': 0,
+            'modestbranding': 1
         },
         events: {
             'onReady': onPlayerReady
@@ -203,26 +205,37 @@ function moveScreensaverBackgrounds() {
 }
 
 function toggleFullscreen() {
-    if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch((e) => {
-            console.log(`Error attempting to enable fullscreen mode: ${e.message} (${e.name})`);
-        });
+    const elem = document.documentElement;
+    
+    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        // iOS Safari uses webkit prefix
+        const requestFn = elem.requestFullscreen || elem.webkitRequestFullscreen;
+        if (requestFn) {
+            requestFn.call(elem).catch((e) => {
+                console.log(`Error attempting to enable fullscreen mode: ${e.message} (${e.name})`);
+            });
+        }
         fullscreenIcon.textContent = 'fullscreen_exit';
     } else {
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
+        // iOS Safari uses webkit prefix
+        const exitFn = document.exitFullscreen || document.webkitExitFullscreen;
+        if (exitFn) {
+            exitFn.call(document);
             fullscreenIcon.textContent = 'fullscreen';
         }
     }
 }
 
-document.addEventListener('fullscreenchange', () => {
-    if (!document.fullscreenElement) {
-        fullscreenIcon.textContent = 'fullscreen';
-    } else {
+document.addEventListener('fullscreenchange', updateFullscreenIcon);
+document.addEventListener('webkitfullscreenchange', updateFullscreenIcon);
+
+function updateFullscreenIcon() {
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
         fullscreenIcon.textContent = 'fullscreen_exit';
+    } else {
+        fullscreenIcon.textContent = 'fullscreen';
     }
-});
+}
 
 let clockInterval = null;
 let isClockVisible = false;
